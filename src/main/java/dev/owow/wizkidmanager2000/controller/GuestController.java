@@ -4,13 +4,15 @@ import dev.owow.wizkidmanager2000.dao.AccountDao;
 import dev.owow.wizkidmanager2000.dao.UserDao;
 import dev.owow.wizkidmanager2000.entity.AccountEntity;
 import dev.owow.wizkidmanager2000.entity.UserEntity;
+import dev.owow.wizkidmanager2000.exception.FiredException;
 import dev.owow.wizkidmanager2000.model.request.NewWizkidModel;
-import dev.owow.wizkidmanager2000.model.request.UpdateWizkidModel;
+import dev.owow.wizkidmanager2000.model.request.UpdateWizkidGuestModel;
 import dev.owow.wizkidmanager2000.model.response.WizkidModel;
+import dev.owow.wizkidmanager2000.utils.UserStatus;
 import dev.owow.wizkidmanager2000.utils.WizkidUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("wizkid")
+@Slf4j
 public class GuestController {
 
     @Autowired
@@ -33,6 +36,12 @@ public class GuestController {
                 .body(allWizkids);
     }
 
+    /**
+     * The guest does the "registration" for the new user by providing the password and email
+     *
+     * @param newWizkidModel
+     * @return WizkidModel
+     */
     @PostMapping()
     ResponseEntity<?> createWizkid(@RequestBody NewWizkidModel newWizkidModel) {
         AccountEntity newAccountEntity = accountDao.createAccount(newWizkidModel.getEmail(), newWizkidModel.getPassword());
@@ -48,7 +57,6 @@ public class GuestController {
                 .body(WizkidUtils.toModel(newUserEntity));
     }
 
-//    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     ResponseEntity<?> getWizkid(@PathVariable Long id) {
         UserEntity userEntity = userDao.findById(id);
@@ -57,19 +65,14 @@ public class GuestController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<?> updateWizkid(@RequestBody UpdateWizkidModel updateWizkidModel, @PathVariable Long id) {
+    ResponseEntity<?> updateWizkid(@RequestBody UpdateWizkidGuestModel updateWizkidGuestModel, @PathVariable Long id) {
         UserEntity userEntity = userDao.findById(id);
-        AccountEntity accountEntity = userEntity.getAccountEntity();
-        accountEntity.setEmail(updateWizkidModel.getEmail());
-
-        userEntity.setFirstName(updateWizkidModel.getFirstName());
-        userEntity.setLastName(updateWizkidModel.getLastName());
-        userEntity.setEmail(updateWizkidModel.getEmail());
-        userEntity.setRole(updateWizkidModel.getRole());
-        userEntity.setPhone(updateWizkidModel.getPhone());
-        userEntity.setPicture(updateWizkidModel.getPicture());
-        userEntity.setAccountEntity(accountDao.updateAccount(accountEntity));
-
+        if (userEntity.getStatus().equals(UserStatus.FIRED.toString())) {
+            log.error("Cannot update user details as user is fired");
+            throw new FiredException("Cannot update user details as user is fired");
+        }
+        userEntity.setFirstName(updateWizkidGuestModel.getFirstName());
+        userEntity.setLastName(updateWizkidGuestModel.getLastName());
         return ResponseEntity.ok()
                 .body(WizkidUtils.toModel(userDao.updateUser(userEntity)));
     }

@@ -17,4 +17,5 @@ public class WizkidModel {
     private String role;
     private String phone;
     private String picture;
+    private String status;
 }

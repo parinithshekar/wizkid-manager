@@ -14,6 +14,7 @@ public class WizkidUtils {
                 .role(userEntity.getRole())
                 .phone(userEntity.getPhone())
                 .picture(userEntity.getPicture())
+                .status(userEntity.getStatus())
                 .build();
     }
 }

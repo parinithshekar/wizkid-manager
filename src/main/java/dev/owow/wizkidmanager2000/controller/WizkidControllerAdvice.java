@@ -1,5 +1,6 @@
 package dev.owow.wizkidmanager2000.controller;
 
+import dev.owow.wizkidmanager2000.exception.FiredException;
 import dev.owow.wizkidmanager2000.exception.WizkidManagerException;
 import dev.owow.wizkidmanager2000.exception.WizkidNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,13 @@ public class WizkidControllerAdvice {
     @ExceptionHandler(WizkidManagerException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     String wizkidManagerExceptionHandler(WizkidManagerException exception) {
+        return exception.getMessage();
+    }
+
+    @ResponseBody
+    @ExceptionHandler(FiredException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    String firedExceptionHandler(FiredException exception) {
         return exception.getMessage();
     }
 }

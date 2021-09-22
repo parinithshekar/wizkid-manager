@@ -6,6 +6,7 @@ import dev.owow.wizkidmanager2000.exception.WizkidManagerException;
 import dev.owow.wizkidmanager2000.exception.WizkidNotFoundException;
 import dev.owow.wizkidmanager2000.repository.AccountRepository;
 import dev.owow.wizkidmanager2000.repository.UserRepository;
+import dev.owow.wizkidmanager2000.utils.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,7 @@ public class UserDao {
                     .lastName(lastName)
                     .role(role)
                     .email(accountEntity.getEmail())
+                    .status(UserStatus.ACTIVE.toString())
                     .accountEntity(accountEntity)
                     .build();
             newUserEntity.setPhone((phone != null && !phone.isEmpty()) ? phone : null);
@@ -52,7 +54,7 @@ public class UserDao {
             if (user.isPresent()) {
                 return user.get();
             }
-            throw new WizkidNotFoundException("Wizkid with ID " + id + " not found!");
+            throw new WizkidNotFoundException("Wizkid not found with ID " + id);
         } catch (Exception exception) {
             if (exception instanceof WizkidNotFoundException) {
                 throw exception;
@@ -84,6 +86,14 @@ public class UserDao {
             } else {
                 throw new WizkidManagerException("Failed to delete wizkid with ID " + id + " : " + exception.getMessage(), exception);
             }
+        }
+    }
+
+    public boolean isFired(String email) {
+        try {
+            return userRepository.isFired(email);
+        } catch (Exception exception) {
+            throw new WizkidManagerException("Failed to fetch user details : " + exception.getMessage(), exception);
         }
     }
 }
