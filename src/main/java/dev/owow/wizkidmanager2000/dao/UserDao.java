@@ -96,4 +96,16 @@ public class UserDao {
             throw new WizkidManagerException("Failed to fetch user details : " + exception.getMessage(), exception);
         }
     }
+
+    public List<UserEntity> search(String searchString, String role) {
+        try {
+            if (role==null || role.equalsIgnoreCase("")) {
+                return userRepository.search(searchString);
+            } else {
+                return userRepository.searchWithRole(searchString, role);
+            }
+        } catch (Exception exception) {
+            throw new WizkidManagerException("Failed to search for wizkids");
+        }
+    }
 }

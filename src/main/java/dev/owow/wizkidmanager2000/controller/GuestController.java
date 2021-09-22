@@ -82,4 +82,11 @@ public class GuestController {
         userDao.deleteUser(id);
     }
 
+    @GetMapping("/search")
+    ResponseEntity<?> searchWizkids(@RequestParam String search, @RequestParam String role) {
+        List<WizkidModel> wizkids = userDao.search(search, role).stream().map(WizkidUtils::toModel).collect(Collectors.toList());
+        return ResponseEntity.ok()
+                .body(wizkids);
+    }
+
 }
