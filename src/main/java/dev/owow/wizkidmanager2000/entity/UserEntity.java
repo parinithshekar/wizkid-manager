@@ -1,14 +1,12 @@
 package dev.owow.wizkidmanager2000.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Data
 @Builder
@@ -19,6 +17,10 @@ import javax.persistence.Table;
 public class UserEntity extends AuditEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long wizkidId;
+
     @Column(name="email")
     private String email;
 
@@ -34,6 +36,11 @@ public class UserEntity extends AuditEntity {
     @Column(name="phone")
     private String phone;
 
-    @Column(name="profile_picture")
-    private String profilePicture;
+    @Column(name="picture")
+    private String picture;
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "account_id", nullable = false)
+    @JsonIgnore
+    private AccountEntity accountEntity;
 }
