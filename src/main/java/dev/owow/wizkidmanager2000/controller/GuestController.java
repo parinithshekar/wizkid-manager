@@ -8,6 +8,7 @@ import dev.owow.wizkidmanager2000.exception.FiredException;
 import dev.owow.wizkidmanager2000.model.request.NewWizkidModel;
 import dev.owow.wizkidmanager2000.model.request.UpdateWizkidGuestModel;
 import dev.owow.wizkidmanager2000.model.response.WizkidModel;
+import dev.owow.wizkidmanager2000.utils.CommonUtils;
 import dev.owow.wizkidmanager2000.utils.UserStatus;
 import dev.owow.wizkidmanager2000.utils.WizkidUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ public class GuestController {
     ResponseEntity<?> all() {
         List<WizkidModel> allWizkids = userDao.findAll().stream().map(WizkidUtils::toModel).collect(Collectors.toList());
         return ResponseEntity.ok()
+                .headers(CommonUtils.getCorsHeaders())
                 .body(allWizkids);
     }
 
@@ -58,6 +60,7 @@ public class GuestController {
                 newAccountEntity
         );
         return ResponseEntity.ok()
+                .headers(CommonUtils.getCorsHeaders())
                 .body(WizkidUtils.toModel(newUserEntity));
     }
 
@@ -70,6 +73,7 @@ public class GuestController {
     ResponseEntity<?> getWizkid(@PathVariable Long id) {
         UserEntity userEntity = userDao.findById(id);
         return ResponseEntity.ok()
+                .headers(CommonUtils.getCorsHeaders())
                 .body(WizkidUtils.toModel(userEntity));
     }
 
@@ -90,6 +94,7 @@ public class GuestController {
         userEntity.setLastName(updateWizkidGuestModel.getLastName());
         log.info("Details updated for wizkid ID {}", id);
         return ResponseEntity.ok()
+                .headers(CommonUtils.getCorsHeaders())
                 .body(WizkidUtils.toModel(userDao.updateUser(userEntity)));
     }
 
@@ -113,6 +118,7 @@ public class GuestController {
     ResponseEntity<?> searchWizkids(@RequestParam String search, @RequestParam String role) {
         List<WizkidModel> wizkids = userDao.search(search, role).stream().map(WizkidUtils::toModel).collect(Collectors.toList());
         return ResponseEntity.ok()
+                .headers(CommonUtils.getCorsHeaders())
                 .body(wizkids);
     }
 

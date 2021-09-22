@@ -8,6 +8,7 @@ import dev.owow.wizkidmanager2000.exception.FiredException;
 import dev.owow.wizkidmanager2000.exception.WizkidManagerException;
 import dev.owow.wizkidmanager2000.exception.WizkidNotFoundException;
 import dev.owow.wizkidmanager2000.model.request.UpdateWizkidModel;
+import dev.owow.wizkidmanager2000.utils.CommonUtils;
 import dev.owow.wizkidmanager2000.utils.UserStatus;
 import dev.owow.wizkidmanager2000.utils.WizkidUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -39,11 +40,15 @@ public class UserController {
         try {
             UserEntity userEntity = userDao.findById(id);
             if (userEntity.getStatus().equals(UserStatus.FIRED.toString())) {
-                return ResponseEntity.ok().body("This wizkid has already been fired");
+                return ResponseEntity.ok()
+                        .headers(CommonUtils.getCorsHeaders())
+                        .body("This wizkid has already been fired");
             }
             userEntity.setStatus(UserStatus.FIRED.toString());
             userDao.updateUser(userEntity);
-            return ResponseEntity.ok().body("Wizkid with ID " + id + " is fired!");
+            return ResponseEntity.ok()
+                    .headers(CommonUtils.getCorsHeaders())
+                    .body("Wizkid with ID " + id + " is fired!");
         } catch (Exception exception) {
             if (exception instanceof WizkidNotFoundException || exception instanceof WizkidManagerException) {
                 throw exception;
@@ -65,11 +70,15 @@ public class UserController {
         try {
             UserEntity userEntity = userDao.findById(id);
             if (userEntity.getStatus().equals(UserStatus.ACTIVE.toString())) {
-                return ResponseEntity.ok().body("This wizkid has already been re-instated");
+                return ResponseEntity.ok()
+                        .headers(CommonUtils.getCorsHeaders())
+                        .body("This wizkid has already been re-instated");
             }
             userEntity.setStatus(UserStatus.ACTIVE.toString());
             userDao.updateUser(userEntity);
-            return ResponseEntity.ok().body("Wizkid with ID " + id + " is now back at OWOW!");
+            return ResponseEntity.ok()
+                    .headers(CommonUtils.getCorsHeaders())
+                    .body("Wizkid with ID " + id + " is now back at OWOW!");
         } catch (Exception exception) {
             if (exception instanceof WizkidNotFoundException || exception instanceof WizkidManagerException) {
                 throw exception;
@@ -108,6 +117,7 @@ public class UserController {
         userEntity.setAccountEntity(accountDao.updateAccount(accountEntity));
 
         return ResponseEntity.ok()
+                .headers(CommonUtils.getCorsHeaders())
                 .body(WizkidUtils.toModel(userDao.updateUser(userEntity)));
     }
 }

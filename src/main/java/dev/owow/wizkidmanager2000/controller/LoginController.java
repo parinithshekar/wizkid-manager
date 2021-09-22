@@ -66,7 +66,6 @@ public class LoginController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         HttpHeaders httpHeaders = new HttpHeaders(CommonUtils.getCorsHeaders());
         httpHeaders.set(HttpHeaders.SET_COOKIE, "WizkidAuthCookie=" + jwtOperations.createToken(userDetails));
-
         return ResponseEntity.ok().headers(httpHeaders).body("LOGIN SUCCESS");
     }
 }
