@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("wizkid")
-public class WizkidController {
+public class GuestController {
 
     @Autowired
     private AccountDao accountDao;
@@ -48,7 +48,7 @@ public class WizkidController {
                 .body(WizkidUtils.toModel(newUserEntity));
     }
 
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     ResponseEntity<?> getWizkid(@PathVariable Long id) {
         UserEntity userEntity = userDao.findById(id);

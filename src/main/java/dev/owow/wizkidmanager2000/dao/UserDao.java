@@ -2,6 +2,7 @@ package dev.owow.wizkidmanager2000.dao;
 
 import dev.owow.wizkidmanager2000.entity.AccountEntity;
 import dev.owow.wizkidmanager2000.entity.UserEntity;
+import dev.owow.wizkidmanager2000.exception.WizkidManagerException;
 import dev.owow.wizkidmanager2000.exception.WizkidNotFoundException;
 import dev.owow.wizkidmanager2000.repository.AccountRepository;
 import dev.owow.wizkidmanager2000.repository.UserRepository;
@@ -21,40 +22,68 @@ public class UserDao {
     private AccountRepository accountRepository;
 
     public UserEntity createUser(String firstName, String lastName, String role, String phone, String picture, AccountEntity accountEntity) {
-        UserEntity newUserEntity = UserEntity.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .role(role)
-                .email(accountEntity.getEmail())
-                .accountEntity(accountEntity)
-                .build();
-        newUserEntity.setPhone((phone != null && !phone.isEmpty()) ? phone : null);
-        newUserEntity.setPicture((picture != null && !picture.isEmpty()) ? picture : null);
-        return userRepository.save(newUserEntity);
+        try {
+            UserEntity newUserEntity = UserEntity.builder()
+                    .firstName(firstName)
+                    .lastName(lastName)
+                    .role(role)
+                    .email(accountEntity.getEmail())
+                    .accountEntity(accountEntity)
+                    .build();
+            newUserEntity.setPhone((phone != null && !phone.isEmpty()) ? phone : null);
+            newUserEntity.setPicture((picture != null && !picture.isEmpty()) ? picture : null);
+            return userRepository.save(newUserEntity);
+        } catch (Exception exception) {
+            throw new WizkidManagerException("Failed to create new user : " + exception.getMessage(), exception);
+        }
     }
 
     public List<UserEntity> findAll() {
-        return userRepository.findAll();
+        try {
+            return userRepository.findAll();
+        } catch (Exception exception) {
+            throw new WizkidManagerException("Failed to fetch wizkids : " + exception.getMessage(), exception);
+        }
     }
 
     public UserEntity findById(Long id) {
-        Optional<UserEntity> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            return user.get();
+        try {
+            Optional<UserEntity> user = userRepository.findById(id);
+            if (user.isPresent()) {
+                return user.get();
+            }
+            throw new WizkidNotFoundException("Wizkid with ID " + id + " not found!");
+        } catch (Exception exception) {
+            if (exception instanceof WizkidNotFoundException) {
+                throw exception;
+            } else {
+                throw new WizkidManagerException("Failed to find user : " + exception.getMessage(), exception);
+            }
         }
-        throw new WizkidNotFoundException("Wizkid with ID " + id + " not found!");
     }
 
     public UserEntity updateUser(UserEntity userEntity) {
-        return userRepository.save(userEntity);
+        try {
+            return userRepository.save(userEntity);
+        } catch (Exception exception) {
+            throw new WizkidManagerException("Failed to update user : " + exception.getMessage(), exception);
+        }
     }
 
     public void deleteUser(Long id) {
-        UserEntity userEntity = userRepository.findById(id)
-                .orElseThrow(() -> {
-                    throw new WizkidNotFoundException("Wizkid not found with ID " + id);
-                });
-        // This cascades deletes the user entry as well
-        accountRepository.deleteById(userEntity.getAccountEntity().getId());
+        try {
+            UserEntity userEntity = userRepository.findById(id)
+                    .orElseThrow(() -> {
+                        throw new WizkidNotFoundException("Wizkid not found with ID " + id);
+                    });
+            // This cascades deletes the user entry as well
+            accountRepository.deleteById(userEntity.getAccountEntity().getId());
+        } catch (Exception exception) {
+            if (exception instanceof WizkidNotFoundException) {
+                throw exception;
+            } else {
+                throw new WizkidManagerException("Failed to delete wizkid with ID " + id + " : " + exception.getMessage(), exception);
+            }
+        }
     }
 }
