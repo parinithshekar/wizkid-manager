@@ -11,7 +11,6 @@ import dev.owow.wizkidmanager2000.model.request.UpdateWizkidModel;
 import dev.owow.wizkidmanager2000.utils.UserStatus;
 import dev.owow.wizkidmanager2000.utils.WizkidUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +27,12 @@ public class UserController {
     @Autowired
     private AccountDao accountDao;
 
+    /**
+     * Fire a wizkid, this wizkid will no longer be able to login and access other features
+     *
+     * @param id
+     * @return Success or Error message
+     */
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/fire/{id}")
     ResponseEntity<?> fire(@PathVariable Long id) {
@@ -48,6 +53,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Unfire a wizkid, this wizkid will be reinstated at OWOW and be able to access all features again
+     *
+     * @param id
+     * @return Success or Error message
+     */
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/unfire/{id}")
     ResponseEntity<?> unfire(@PathVariable Long id) {
@@ -68,6 +79,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Update the details of a wizkid. This method allows to update all data including the phone and email
+     *
+     * @param updateWizkidModel
+     * @param id
+     * @return
+     */
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/details")
     ResponseEntity<?> updateDetails(@RequestBody UpdateWizkidModel updateWizkidModel, @PathVariable Long id) {

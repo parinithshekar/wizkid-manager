@@ -39,6 +39,11 @@ public class LoginController {
     @Autowired
     private JWTOperations jwtOperations;
 
+    /**
+     * Login by providing email and password
+     * @param loginModel
+     * @return The JWT token for future API calls authorization
+     */
     @PostMapping("/login")
     ResponseEntity<?> login(@RequestBody LoginModel loginModel) {
         String email = loginModel.getEmail();

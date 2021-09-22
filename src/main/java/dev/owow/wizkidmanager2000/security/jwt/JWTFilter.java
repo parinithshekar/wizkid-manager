@@ -35,6 +35,14 @@ public class JWTFilter extends OncePerRequestFilter {
     @Autowired
     private JWTOperations jwtOperations;
 
+    /**
+     * Intercept incoming requests, validate the JWT token, set the security context and continue on to execute teh API logic
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {

@@ -48,6 +48,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // Permit access to all routes at the start and restrict access per API
         http.csrf().disable()
                 .authorizeRequests()
                 .anyRequest().permitAll()
